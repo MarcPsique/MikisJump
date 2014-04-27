@@ -15,6 +15,7 @@
     <ClCompile Include="..\..\src\framework.cpp" />
     <ClCompile Include="..\..\src\image.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\obstacle.cpp" />
     <ClCompile Include="..\..\src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -22,6 +23,7 @@
     <ClInclude Include="..\..\src\framework.h" />
     <ClInclude Include="..\..\src\image.h" />
     <ClInclude Include="..\..\src\includes.h" />
+    <ClInclude Include="..\..\src\obstacle.h" />
     <ClInclude Include="..\..\src\utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

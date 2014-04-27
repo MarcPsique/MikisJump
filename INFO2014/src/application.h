@@ -8,13 +8,16 @@
 
 #include "includes.h"
 #include "framework.h"
+#include "obstacle.h"
 
 class Application
 {
 public:
 
-	// Variables incorporades per tenir la posició del quadrat vermell
-	unsigned int posBolaX = 200;	// Aqui no podem fer referencia a img.width/2
+	// Variable incorporada per tenir la posició horitzontal del quadrat vermell
+	unsigned int posBolaX = 200;
+	// Obstacles
+	Obstacle arrayObs[17];
 
 
 	//window
