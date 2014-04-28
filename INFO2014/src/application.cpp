@@ -28,11 +28,11 @@ void Application::init(void)
 	// Inicialitzem els parametres aleatoris del array de 17 obstacles que trobem en "application.h"
 	// Despres els anirem modificant a mesura que avança el joc.
 	unsigned int i;
-	for (i = 0; i < 17; i++)
+	for (i = 0; i < num_obs; i++)
 	{
 		unsigned int X = 260 - (rand() % 160);	// 260 perque cada obstacle te una component hor. de 40 pixels
 												// 160 perque es el marge blanc (la pantalla del joc)
-		unsigned int Y = rand () % 20 + i*i;	// Aqui hem de trobar una funcio amb bona dispersio per que no
+		unsigned int Y = (300 / num_obs)*i + (int)(300 / num_obs*0.5) + rand() % (int)(300 / num_obs*0.5);			// Aqui hem de trobar una funcio amb bona dispersio per que no
 												// surtin obstacles en la mateixa y, estiguin dispersats per la pantalla.
 		arrayObs[i] = Obstacle(X, Y);			// Inicialitzem l'array d'obstacles amb les posicions trobades
 	}
@@ -55,23 +55,53 @@ void Application::render(void)
 	
 			// Funcio Moviment Harmonic Simple (desplaçament vertical)
 			// relativa = 125;	// amplitud = 80;	// frequencia = 4;
-			unsigned int posBolaY = 125 + ( 80 * sin(4*time) );
+			unsigned int sinVar = sin((4 * time) - (0.5 * PI));
+			
 
-			// Imprimir el quadrat vermell
-			if (x > posBolaX  &&  x < posBolaX + 10  &&  y > posBolaY  &&  y < posBolaY + 10)
-				img.setPixel(x, y, Color::RED );
+
+
+			//unsigned int posBolaY = 125 + (80 * sin((4 * time) - (0.5 * PI)));
+
+			if (posBolaY < colisioY)
+				baixarObs();
 
 			// Imprimir obstacles per la pantalla amb 40 pixels horitzontals i 5 d'alçada
 			int i;
-			for (i = 0; i < 17; i++) {
-				if (x > arrayObs[i].getX() && x < arrayObs[i].getX() + 40 && y > arrayObs[i].getY() && y < arrayObs[i].getY() + 5)
-					img.setPixel(x, y, Color::BLUE );
+			for (i = 0; i < 12; i++) {
+				if (x > arrayObs[i].getX() && x < arrayObs[i].getX() + 40 && y > arrayObs[i].getY() && y < arrayObs[i].getY() + 5){
+					img.setPixel(x, y, Color::BLUE);
+				}		
+			}
+			
+			// Imprimir el quadrat vermell
+			
+			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY  &&  y < posBolaY + 10)
+			{
+				if (img.getPixel(x, y) == Color::BLUE)
+				img.setPixel(x, y, Color::RED);
+			}
+				
+
+			/*
+
+			for (i = 0; i < 12; i++) {
+				if (posBolaX > arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40){
+					if (colisioY<arrayObs[i].getY())
+						colisioY = arrayObs[i].getY();
+				}
 			}
 
-
+			
+			if ((unsigned int)(125 + (80 * sin((4 * time) - (0.5 * PI)))) == arrayObs[i].getY() && posBolaX> arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40){
+					std::cout << "tocara";
+					//baixarObs();
+			}
+			*/
+		
 
 		}
 	}
+
 
 	img.scale( this->window_width, this->window_height );
 
@@ -79,6 +109,13 @@ void Application::render(void)
 
 	//swap between front buffer and back buffer
 	SDL_GL_SwapWindow(this->window);
+}
+
+void Application::baixarObs()
+{ 
+	unsigned int i;
+	for (i = 0; i < num_obs; i++)
+		arrayObs[i].setY(arrayObs[i].getY()-1);
 }
 
 //called after render

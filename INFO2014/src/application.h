@@ -16,8 +16,15 @@ public:
 
 	// Variable incorporada per tenir la posició horitzontal del quadrat vermell
 	unsigned int posBolaX = 200;
+	unsigned int posBolaY = 100;
+	unsigned int num_obs = 12;
+	unsigned int colisioY = 0;
+	int velocitat=0.001;
+	// 
 	// Obstacles
-	Obstacle arrayObs[17];
+	Obstacle arrayObs[12];
+	// BaixarObs...
+	void baixarObs();
 
 
 	//window

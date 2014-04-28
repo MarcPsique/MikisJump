@@ -44,7 +44,7 @@ public:
 
 	//get the pixel at position x,y
 	Color getPixel(unsigned int x, unsigned int y) const { return pixels[ y * width + x ]; }
-	Color& getPixelRef(unsigned int x, unsigned int y)	{ return pixels[ y * width + x ]; }
+	Color& getPixelRef(unsigned int x, unsigned int y) { return pixels[ y * width + x ]; }
 	Color getPixelSafe(unsigned int x, unsigned int y) const {	
 		x = clamp((unsigned int)x, 0, width-1); 
 		y = clamp((unsigned int)y, 0, height-1); 
