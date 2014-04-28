@@ -55,49 +55,39 @@ void Application::render(void)
 	
 			// Funcio Moviment Harmonic Simple (desplaçament vertical)
 			// relativa = 125;	// amplitud = 80;	// frequencia = 4;
-			unsigned int sinVar = sin((4 * time) - (0.5 * PI));
+			float sinVar = sin((4 * time) - (0.5 * PI));
+			unsigned int posBolaY = 125 + (80 * sinVar);
+
 			
+			// Imprimir el quadrat vermell
+			bool baixar = false;
+			unsigned int i;
+			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY  &&  y < posBolaY + 10)
+			{			
+				img.setPixel(x, y, Color::RED);
+				
+				for (i=0 ; i < 5; i++) {
+					if (sinVar < 0 && areEqual(img.getPixel(posBolaX, posBolaY + i), Color::BLUE)) {
+						baixar = true;
+						//break;
+					}
+				}
+				
+			}
 
-
-
-			//unsigned int posBolaY = 125 + (80 * sin((4 * time) - (0.5 * PI)));
-
-			if (posBolaY < colisioY)
-				baixarObs();
+			if (baixar){
+				for (i = 0; i < num_obs; i++)
+					arrayObs[i].setY(arrayObs[i].getY() - 1);
+				baixar = false;
+			}
 
 			// Imprimir obstacles per la pantalla amb 40 pixels horitzontals i 5 d'alçada
-			int i;
 			for (i = 0; i < 12; i++) {
 				if (x > arrayObs[i].getX() && x < arrayObs[i].getX() + 40 && y > arrayObs[i].getY() && y < arrayObs[i].getY() + 5){
 					img.setPixel(x, y, Color::BLUE);
 				}		
 			}
-			
-			// Imprimir el quadrat vermell
-			
-			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY  &&  y < posBolaY + 10)
-			{
-				if (img.getPixel(x, y) == Color::BLUE)
-				img.setPixel(x, y, Color::RED);
-			}
-				
-
-			/*
-
-			for (i = 0; i < 12; i++) {
-				if (posBolaX > arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40){
-					if (colisioY<arrayObs[i].getY())
-						colisioY = arrayObs[i].getY();
-				}
-			}
-
-			
-			if ((unsigned int)(125 + (80 * sin((4 * time) - (0.5 * PI)))) == arrayObs[i].getY() && posBolaX> arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40){
-					std::cout << "tocara";
-					//baixarObs();
-			}
-			*/
-		
+					
 
 		}
 	}
@@ -111,12 +101,15 @@ void Application::render(void)
 	SDL_GL_SwapWindow(this->window);
 }
 
-void Application::baixarObs()
-{ 
-	unsigned int i;
-	for (i = 0; i < num_obs; i++)
-		arrayObs[i].setY(arrayObs[i].getY()-1);
+//comparing the color of two pixels
+bool Application::areEqual(Color c1, Color c2)
+{
+	if (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b)
+		return true;
+	else
+		return false;
 }
+
 
 //called after render
 void Application::update(double seconds_elapsed)

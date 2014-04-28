@@ -51,6 +51,8 @@ public:
 		return pixels[ y * width + x ]; 
 	}
 
+	
+
 	//set the pixel at position x,y with value C
 	void setPixel(unsigned int x, unsigned int y, const Color& c) { pixels[ y * width + x ] = c; }
 	void setPixelSafe(unsigned int x, unsigned int y, const Color& c) const { x = clamp(x, 0, width-1); y = clamp(y, 0, height-1); pixels[ y * width + x ] = c; }

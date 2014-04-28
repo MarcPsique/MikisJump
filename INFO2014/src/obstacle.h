@@ -8,6 +8,7 @@ class Obstacle
 {
 	unsigned int posObsX;
 	unsigned int posObsY;
+	bool touched = false;
 
 public:
 

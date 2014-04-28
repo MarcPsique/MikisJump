@@ -16,7 +16,6 @@ public:
 
 	// Variable incorporada per tenir la posició horitzontal del quadrat vermell
 	unsigned int posBolaX = 200;
-	unsigned int posBolaY = 100;
 	unsigned int num_obs = 12;
 	unsigned int colisioY = 0;
 	int velocitat=0.001;
@@ -24,8 +23,10 @@ public:
 	// Obstacles
 	Obstacle arrayObs[12];
 	// BaixarObs...
-	void baixarObs();
+	//void baixarObs();
 
+	//comparing the color of two pixels
+	bool areEqual(Color c1, Color c2);
 
 	//window
 	SDL_Window* window;
