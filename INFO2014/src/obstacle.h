@@ -8,7 +8,6 @@ class Obstacle
 {
 	unsigned int posObsX;
 	unsigned int posObsY;
-	bool touched = false;
 
 public:
 
@@ -24,7 +23,8 @@ public:
 	void setX(unsigned int X);
 	void setY(unsigned int Y);
 
-
+	// Actualitzar obstacles
+	void updateObs(unsigned int distance);
 };
 
 #endif

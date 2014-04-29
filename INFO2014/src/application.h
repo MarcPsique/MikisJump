@@ -8,25 +8,34 @@
 
 #include "includes.h"
 #include "framework.h"
+#include "image.h"
 #include "obstacle.h"
 
 class Application
 {
 public:
 
+	/* VARIABLES */
 	// Variable incorporada per tenir la posició horitzontal del quadrat vermell
 	unsigned int posBolaX = 200;
-	unsigned int num_obs = 12;
-	unsigned int colisioY = 0;
-	int velocitat=0.001;
-	// 
+	unsigned int posBolaY = 45;
+	float vel = 0;
+
+	unsigned int N_Obs = 12;
+
+	unsigned int i, j;
+	unsigned int distance;
+
+	bool goDown = false;
+
 	// Obstacles
 	Obstacle arrayObs[12];
-	// BaixarObs...
-	//void baixarObs();
 
-	//comparing the color of two pixels
-	bool areEqual(Color c1, Color c2);
+	/* FUNCTIONS */
+	void mhsPlayer(void);				// getting posBolaY updated
+	bool areEqual(Color c1, Color c2);	// comparing the color of two pixels
+
+
 
 	//window
 	SDL_Window* window;

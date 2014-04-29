@@ -25,16 +25,13 @@ void Application::init(void)
 
 	//here add your init stuff
 	
-	// Inicialitzem els parametres aleatoris del array de 17 obstacles que trobem en "application.h"
-	// Despres els anirem modificant a mesura que avança el joc.
-	unsigned int i;
-	for (i = 0; i < num_obs; i++)
-	{
-		unsigned int X = 260 - (rand() % 160);	// 260 perque cada obstacle te una component hor. de 40 pixels
-												// 160 perque es el marge blanc (la pantalla del joc)
-		unsigned int Y = (300 / num_obs)*i + (int)(300 / num_obs*0.5) + rand() % (int)(300 / num_obs*0.5);			// Aqui hem de trobar una funcio amb bona dispersio per que no
-												// surtin obstacles en la mateixa y, estiguin dispersats per la pantalla.
-		arrayObs[i] = Obstacle(X, Y);			// Inicialitzem l'array d'obstacles amb les posicions trobades
+	// Inicialitzem els parametres aleatoris del array de 12 obstacles que trobem en "application.h"
+	arrayObs[0] = Obstacle(190, 20);
+
+	for (i = 1; i < N_Obs; i++)	{
+		unsigned int X = 260 - (rand() % 160);
+		unsigned int Y = 25 * i +  (rand() % 15);
+		arrayObs[i] = Obstacle(X, Y);
 	}
 }
 
@@ -49,49 +46,55 @@ void Application::render(void)
 	for (unsigned int x = 0; x < img.width; x++) {
 		for(unsigned int y = 0; y < img.height; y++)
 		{
-			// Pantalla de joc (marge blanc)
-			if (x > img.width/4 && x < 3*(img.width/4))
-				img.setPixel(x, y, Color::WHITE );
-	
-			// Funcio Moviment Harmonic Simple (desplaçament vertical)
-			// relativa = 125;	// amplitud = 80;	// frequencia = 4;
-			float sinVar = sin((4 * time) - (0.5 * PI));
-			unsigned int posBolaY = 125 + (80 * sinVar);
+			// Cada cop que ens trobem en (0,0) intento monitoritzar els diferents calculs de totes les posicions
+			// i aixi despres imprimir la imatge d'una tirada.
+			if (x == 0 && y == 0)
+			{
+				// Controla el moviment vertical del 'player' actualitzant la seva posicio posBolaY i la velocitat
+				mhsPlayer();
 
-			
-			// Imprimir el quadrat vermell
-			bool baixar = false;
-			unsigned int i;
-			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY  &&  y < posBolaY + 10)
-			{			
-				img.setPixel(x, y, Color::RED);
+				// En cas d'haver trobat una colisio, goDown es 1 i baixem tots els obstacles 'distance' en pixels
+				if (goDown)
+					for (i = 0; i < N_Obs; i++)
+						arrayObs[i].updateObs(distance);
 				
-				for (i=0 ; i < 5; i++) {
-					if (sinVar < 0 && areEqual(img.getPixel(posBolaX, posBolaY + i), Color::BLUE)) {
-						baixar = true;
-						//break;
+				// goDown es posa a fals sempre per a continuacio mirar si es produira una colisio
+				goDown = false;
+
+				// Si la velocitat es negativa (el player esta baixant), necessitem mirar si esta aprop d'algun obstacle.
+				// Ho podem fer tal i com esta o be utilitzant lo de areEqual()
+				if (vel < 0) {
+					for (i = 0; i < N_Obs; i++)
+					{
+						if (posBolaX > arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40 && posBolaY > arrayObs[i].getY() && posBolaY < arrayObs[i].getY() + 8)
+						{
+							goDown = true;
+							distance = img.height - ( img.height - arrayObs[i].getY() ) + 20;
+						}
 					}
 				}
-				
 			}
 
-			if (baixar){
-				for (i = 0; i < num_obs; i++)
-					arrayObs[i].setY(arrayObs[i].getY() - 1);
-				baixar = false;
-			}
+			// Limits per imprimir la pantalla del joc (marge blanc central)
+			if (x > img.width/4 && x < 3*(img.width/4))
+				img.setPixel(x, y, Color::WHITE);
 
-			// Imprimir obstacles per la pantalla amb 40 pixels horitzontals i 5 d'alçada
-			for (i = 0; i < 12; i++) {
-				if (x > arrayObs[i].getX() && x < arrayObs[i].getX() + 40 && y > arrayObs[i].getY() && y < arrayObs[i].getY() + 5){
-					img.setPixel(x, y, Color::BLUE);
-				}		
-			}
-					
+
+			// Limits per imprimir el quadrat vermell o 'player' de 10 x 10
+			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY && y < posBolaY + 10)
+				img.setPixel(x, y, Color::RED);
+			
+
+			// Com podem fer per imprimir els obstacles i que no es perdi temps recorrent-los tots en cada
+			// iteracio, aixo realment es el que fa que vagi molt lent ja que perdem massa temps imprimint
+			// cada pixel fen les comparacions d'aqui abaix.
+			// El nostre objectiu es que tot el temps de delay estigui a la primera iteracio (x=0 && y=0)
+			for (i = 0; i < N_Obs; i++)			
+				if (x > arrayObs[i].getX() && x < arrayObs[i].getX() + 40 && y > arrayObs[i].getY() && y < arrayObs[i].getY() + 5)
+					img.setPixel(x, y, Color::BLUE);					
 
 		}
 	}
-
 
 	img.scale( this->window_width, this->window_height );
 
@@ -101,6 +104,22 @@ void Application::render(void)
 	SDL_GL_SwapWindow(this->window);
 }
 
+/************
+ * FUNCTIONS *
+ ************/
+// Funcio Moviment Harmonic Simple (desplaçament vertical)
+// Actualitzem la posició posBolaY i la velocitat (derivada posBolaY) que la utilitzem per definir que quan
+// aquesta sigui negativa es quan volem baixar els obstacles. Si es positiva el 'player' estará pujant cap amunt.
+void Application::mhsPlayer(void)
+{
+	// relativa = 100;	// amplitud = 80;	// frequencia = 4;
+	// (min)20 - 100 - 180(max)
+	float consFase = (4 * time) - (PI / 2);
+	posBolaY = 100 + (80 * sin(consFase));
+	vel = 4 * 80 * cos(consFase);
+}
+
+
 //comparing the color of two pixels
 bool Application::areEqual(Color c1, Color c2)
 {
@@ -109,6 +128,8 @@ bool Application::areEqual(Color c1, Color c2)
 	else
 		return false;
 }
+
+
 
 
 //called after render
