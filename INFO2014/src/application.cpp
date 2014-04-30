@@ -43,38 +43,40 @@ void Application::render(void)
 
 	// Render grid
 	Image img(400, 300);
+
+
+	// Cada cop que ens trobem en (0,0) intento monitoritzar els diferents calculs de totes les posicions
+	// i aixi despres imprimir la imatge d'una tirada.
+
+	// Controla el moviment vertical del 'player' actualitzant la seva posicio posBolaY i la velocitat
+	mhsPlayer();
+
+	// En cas d'haver trobat una colisio, goDown es 1 i baixem tots els obstacles 'distance' en pixels
+	if (goDown)
+	for (i = 0; i < N_Obs; i++)
+		arrayObs[i].updateObs(distance);
+
+	// goDown es posa a fals sempre per a continuacio mirar si es produira una colisio
+	goDown = false;
+
+	// Si la velocitat es negativa (el player esta baixant), necessitem mirar si esta aprop d'algun obstacle.
+	// Ho podem fer tal i com esta o be utilitzant lo de areEqual()
+	if (vel < 0) {
+		for (i = 0; i < N_Obs; i++)
+		{
+			if (posBolaX > arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40 && posBolaY > arrayObs[i].getY() && posBolaY < arrayObs[i].getY() + 8)
+			{
+				goDown = true;
+				distance = img.height - (img.height - arrayObs[i].getY()) + 20;
+			}
+		}
+	}
+
+
 	for (unsigned int x = 0; x < img.width; x++) {
 		for(unsigned int y = 0; y < img.height; y++)
 		{
-			// Cada cop que ens trobem en (0,0) intento monitoritzar els diferents calculs de totes les posicions
-			// i aixi despres imprimir la imatge d'una tirada.
-			if (x == 0 && y == 0)
-			{
-				// Controla el moviment vertical del 'player' actualitzant la seva posicio posBolaY i la velocitat
-				mhsPlayer();
-
-				// En cas d'haver trobat una colisio, goDown es 1 i baixem tots els obstacles 'distance' en pixels
-				if (goDown)
-					for (i = 0; i < N_Obs; i++)
-						arrayObs[i].updateObs(distance);
-				
-				// goDown es posa a fals sempre per a continuacio mirar si es produira una colisio
-				goDown = false;
-
-				// Si la velocitat es negativa (el player esta baixant), necessitem mirar si esta aprop d'algun obstacle.
-				// Ho podem fer tal i com esta o be utilitzant lo de areEqual()
-				if (vel < 0) {
-					for (i = 0; i < N_Obs; i++)
-					{
-						if (posBolaX > arrayObs[i].getX() && posBolaX < arrayObs[i].getX() + 40 && posBolaY > arrayObs[i].getY() && posBolaY < arrayObs[i].getY() + 8)
-						{
-							goDown = true;
-							distance = img.height - ( img.height - arrayObs[i].getY() ) + 20;
-						}
-					}
-				}
-			}
-
+		
 			// Limits per imprimir la pantalla del joc (marge blanc central)
 			if (x > img.width/4 && x < 3*(img.width/4))
 				img.setPixel(x, y, Color::WHITE);
