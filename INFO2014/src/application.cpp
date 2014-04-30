@@ -85,6 +85,13 @@ void Application::render(void)
 		for (y = posBolaY; y < posBolaY + 10; y++)
 			img.setPixel(x, y, Color::RED);
 
+	//Imprimir obstacles
+	/*
+	for (i = 0; i < N_Obs; i++)
+		for (x = arrayObs[i].getX(); x < arrayObs[i].getX() + 40; x++)
+			for (y = arrayObs[i].getY(); y <arrayObs[i].getY() + 5; y++)
+				img.setPixel(x, y, Color::BLUE);
+	*/
 	for (unsigned int x = 0; x < img.width; x++) {
 		for(unsigned int y = 0; y < img.height; y++)
 		{		
