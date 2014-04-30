@@ -72,20 +72,22 @@ void Application::render(void)
 		}
 	}
 
+	unsigned int x;
+	unsigned int y;
+
+	//fons blanc
+	for (x = img.width / 4; x < 3 * (img.width / 4); x++)
+		for (y = 0; y < img.height; y++)
+			img.setPixel(x, y, Color::WHITE);
+
+	// Imprimir el quadrat vermell o 'player' de 10 x 10
+	for (x = posBolaX; x < posBolaX + 10; x++)
+		for (y = posBolaY; y < posBolaY + 10; y++)
+			img.setPixel(x, y, Color::RED);
 
 	for (unsigned int x = 0; x < img.width; x++) {
 		for(unsigned int y = 0; y < img.height; y++)
-		{
-		
-			// Limits per imprimir la pantalla del joc (marge blanc central)
-			if (x > img.width/4 && x < 3*(img.width/4))
-				img.setPixel(x, y, Color::WHITE);
-
-
-			// Limits per imprimir el quadrat vermell o 'player' de 10 x 10
-			if (x > posBolaX  &&  x < posBolaX + 10 && y > posBolaY && y < posBolaY + 10)
-				img.setPixel(x, y, Color::RED);
-			
+		{		
 
 			// Com podem fer per imprimir els obstacles i que no es perdi temps recorrent-los tots en cada
 			// iteracio, aixo realment es el que fa que vagi molt lent ja que perdem massa temps imprimint
